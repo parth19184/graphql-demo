@@ -1,13 +1,35 @@
 package com.dataModel.demo;
 
+import com.dataModel.demo.controller.BookController;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
+import org.springframework.graphql.test.tester.GraphQlTester;
 
-@SpringBootTest
+@GraphQlTest(BookController.class)
 class DemoApplicationTests {
 
+	@Autowired
+	private GraphQlTester graphQlTester;
+
 	@Test
-	void contextLoads() {
+	void shouldGetFirstBook() {
+		this.graphQlTester
+				.documentName("bookDetails")
+				.variable("id", "book-1")
+				.execute()
+				.path("bookById")
+				.matchesJson("""
+                    {
+                        "id": "book-1",
+                        "name": "Effective Java",
+                        "pageCount": 416,
+                        "author": {
+                          "firstName": "Joshua",
+                          "lastName": "Bloch"
+                        }
+                    }
+                """);
 	}
 
 }
